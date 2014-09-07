@@ -1,6 +1,9 @@
 package wicket.quickstart;
 
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.Model;
@@ -19,11 +22,21 @@ public class Index extends WebPage {
                 return counter++;
             }
         };
-        add(new Link("link") {
-            public void onClick() {
-                // do nothing.
+
+        final Label label = new Label("counter", model);
+
+        // to be able to update the component when the request is returned to the client browser.
+        // If we don’t, Wicket will not know how to update the markup in the client.
+        label.setOutputMarkupId(true);
+        add(new AjaxFallbackLink("link") {
+            public void onClick(AjaxRequestTarget target) {
+                if (target != null) {
+                    // target is only available in an Ajax request
+                    target.add(label);
+                }
             }
         });
-        add(new Label("counter", model));
+
+        add(label);
     }
 }
